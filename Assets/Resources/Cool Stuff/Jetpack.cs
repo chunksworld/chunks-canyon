@@ -11,7 +11,7 @@ public class Jetpack : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Player" && other.gameObject.transform.childCount == 1) //only if nothing equipped
+        if (other.gameObject.tag == "Player" && other.gameObject.transform.childCount == 1 ) //only if nothing equipped
         {
             firstParticle.Play();
             secondParticle.Play();

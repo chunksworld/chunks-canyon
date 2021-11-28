@@ -28,6 +28,7 @@ public class LevelManager : MonoBehaviour
     public void RestartLevel()
     {
         CONSTANTS.isAlive = true;
+        Physics.IgnoreLayerCollision(6, 0, false);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
     

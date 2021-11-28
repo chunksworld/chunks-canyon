@@ -10,9 +10,10 @@ public class Movement : MonoBehaviour
     private Animator animator;
 
     private bool isPhone = false;
+    private bool canMove = false;
     private void Start()
     {
-
+        canMove = true;
         player = this.GetComponent<Rigidbody>();
 
         if (Application.platform == RuntimePlatform.Android ||
@@ -27,7 +28,7 @@ public class Movement : MonoBehaviour
 
         if (!isPhone) X = GetDirection();
 
-        player.AddForce(new Vector2(X, 0f) * CONSTANTS.Speed);
+        if (canMove) player.AddForce(new Vector2(X, 0f) * CONSTANTS.Speed);
         
         CounterMovement(X);
 
@@ -81,6 +82,10 @@ public class Movement : MonoBehaviour
         if (other.tag == "RightEndScreen") player.transform.position = new Vector3(-player.position.x + 3, player.position.y, player.position.z);
         if (other.tag == "LeftEndScreen") player.transform.position = new Vector3(-player.position.x , player.position.y, player.position.z);
 
+        if (other.tag == "Kill") KillEnemy(other.transform.parent.parent.GetComponent<Rigidbody>());
+
+        if (other.tag == "Die" && player.transform.childCount == 1) Die();
+
     }
 
     private void OnTriggerExit(Collider other)
@@ -94,6 +99,16 @@ public class Movement : MonoBehaviour
         }
 
     }
+
+    private void KillEnemy(Rigidbody enemy)
+    {
+        enemy.transform.GetChild(0).GetChild(1).GetComponent<Collider>().enabled = false;
+        player.AddForce(new Vector2(0f, CONSTANTS.JumpForce));
+    
+        enemy.isKinematic = false;
+        enemy.AddForce(new Vector2(0f, CONSTANTS.EnemyHitForce));
+    }
+    
 
     private void BatootAndSpringHandle(Collision collision)
     {
@@ -115,6 +130,14 @@ public class Movement : MonoBehaviour
     {
         Physics.IgnoreCollision(platform.GetComponent<Collider>(), player.GetComponent<Collider>(), true);
         platform.GetComponent<MeshRenderer>().material.color = new Color(1, 1, 1, 0.2f);
+    }
+
+    private void Die()
+    {
+        canMove = false;
+        Physics.IgnoreLayerCollision(6, 0);
+        player.AddForce(new Vector2(0f, CONSTANTS.EnemyHitForce));
+        animator.SetTrigger("Die");
     }
 
     public void GoRight()

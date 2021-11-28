@@ -6,6 +6,7 @@ public class CONSTANTS : MonoBehaviour
 {
     public static float SpringForce = 800f;
     public static float BatootForce = 1000f;
+    public static float EnemyHitForce = -300f;
     public static float JumpForce = 550f;
     public static float Speed = 15f;
 

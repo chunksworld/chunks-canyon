@@ -3,16 +3,18 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-public class PlatformSpawner : MonoBehaviour
+public class LevelSpawner : MonoBehaviour
 {
 
     int lastPlatformY;
     int lastBackgroundY;
+    int lastEnemyY;
     private Transform player;
 
     List<GameObject> platforms = new List<GameObject>();
     List<GameObject> coolStuff = new List<GameObject>();
     List<GameObject> backGround = new List<GameObject>();
+    List<GameObject> enemies = new List<GameObject>();
 
     int rightPositon = 5;
     int leftPositon = -4;
@@ -32,9 +34,9 @@ public class PlatformSpawner : MonoBehaviour
         platforms.Add(Resources.Load("Platforms/Platform1Time") as GameObject);
 
 
-        //coolStuff.Add(Resources.Load("Cool Stuff/PortalBlue") as GameObject);
+        coolStuff.Add(Resources.Load("Cool Stuff/PortalBlue") as GameObject);
         coolStuff.Add(Resources.Load("Cool Stuff/Up") as GameObject);
-        //coolStuff.Add(Resources.Load("Cool Stuff/JetpackObj") as GameObject);
+        coolStuff.Add(Resources.Load("Cool Stuff/JetpackObj") as GameObject);
         coolStuff.Add(Resources.Load("Cool Stuff/SpringObj") as GameObject);
         
 
@@ -43,12 +45,16 @@ public class PlatformSpawner : MonoBehaviour
         backGround.Add(Resources.Load("Background/Cloud3") as GameObject);
         backGround.Add(Resources.Load("Background/Cloud4") as GameObject);
 
+        enemies.Add(Resources.Load("Enemies/Enemy1") as GameObject);
+
+        InvokeRepeating("EnemySpawn", 0f, 1f);
+
     }
 
 
     void CoolStuffSpawn(GameObject platform)
     {
-        if ( Random.Range ( 0, 3 ) == 2 ) // 10% chance
+        if ( Random.Range ( 0, 10 ) == 2 ) // 10% chance
         {
             GameObject thing = Instantiate(coolStuff[Random.Range(0, coolStuff.Count)]);
             thing.transform.parent = platform.transform.GetChild(0);
@@ -77,6 +83,7 @@ public class PlatformSpawner : MonoBehaviour
 
     private void FixedUpdate()
     {
+
         if (Mathf.Abs(player.transform.position.y - lastPlatformY) < 15f )
         {
             GameObject platform = Instantiate(platforms[Random.Range(0, platforms.Count)]);
@@ -98,11 +105,24 @@ public class PlatformSpawner : MonoBehaviour
         }
         BackgroundSpawn();
 
-        RemoveUnnesseccaryPlatforms();
+        RemoveUnnesseccaryObjects();
 
     }
 
-    private void RemoveUnnesseccaryPlatforms()
+    private void EnemySpawn()
+    {
+        if (player.transform.position.y >= 0 && lastEnemyY - player.transform.position.y < 5)
+        {
+            GameObject enemy = Instantiate(enemies[Random.Range(0, enemies.Count)]);
+            enemy.transform.parent = this.transform;
+            enemy.transform.position = new Vector3(Random.Range(leftPositon + 1, rightPositon - 1), player.transform.position.y + Random.Range(15, 20));
+
+            spawnedObjects.Add(enemy);
+            lastEnemyY = (int)enemy.transform.position.y;
+        }
+    }
+
+    private void RemoveUnnesseccaryObjects()
     {
        
         while (spawnedObjects[0] == null)
